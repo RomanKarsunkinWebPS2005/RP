@@ -1,0 +1,88 @@
+services:
+  redis-main:
+    image: redis:alpine
+    container_name: distributed-redis-main
+    ports:
+      - "6000:6379"
+    volumes:
+      - redis-main-data:/data
+    command: redis-server --appendonly yes
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+  
+  redis-ru:
+    image: redis:alpine
+    container_name: distributed-redis-ru
+    ports:
+      - "6001:6379"
+    volumes:
+      - redis-ru-data:/data
+    command: redis-server --appendonly yes
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+  
+  redis-eu:
+    image: redis:alpine
+    container_name: distributed-redis-eu
+    ports:
+      - "6002:6379"
+    volumes:
+      - redis-eu-data:/data
+    command: redis-server --appendonly yes
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+  
+  redis-asia:
+    image: redis:alpine
+    container_name: distributed-redis-asia
+    ports:
+      - "6003:6379"
+    volumes:
+      - redis-asia-data:/data
+    command: redis-server --appendonly yes
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+  
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
+    restart: unless-stopped
+    healthcheck:
+      test: rabbitmq-diagnostics --quiet check_running && rabbitmq-diagnostics --quiet check_local_alarms
+      interval: 5s
+      timeout: 5s
+      retries: 5
+volumes:
+  redis-main-data:
+  redis-ru-data:
+  redis-eu-data:
+  redis-asia-data:
+  rabbitmq-data:

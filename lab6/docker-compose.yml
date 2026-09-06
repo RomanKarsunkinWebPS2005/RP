@@ -1,0 +1,12 @@
+include:
+  - docker-compose.infrastructure.yml
+  - docker-compose.valuators.yml
+  - docker-compose.rank-calculators.yml
+  - docker-compose.nginx.yml
+  - docker-compose.events-logger.yml  
+volumes:
+  redis-main-data:
+  redis-ru-data:
+  redis-eu-data:
+  redis-asia-data:
+  rabbitmq-data:

@@ -1,0 +1,29 @@
+﻿x-events-logger: &events-logger
+  build:
+    context: .
+    dockerfile: EventsLogger/Dockerfile
+  depends_on:
+    rabbitmq:
+      condition: service_healthy
+  environment:
+    - REDIS_CONNECTION=${REDIS_CONNECTION}
+    - RABBITMQ_HOST=${RABBITMQ_HOST}
+    - RABBITMQ_PORT=${RABBITMQ_PORT}
+    - RABBITMQ_USER=${RABBITMQ_USER}
+    - RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD}
+    - RABBITMQ_QUEUE=${RABBITMQ_QUEUE}
+    - RABBITMQ_EVENTS_EXCHANGE=${RABBITMQ_EVENTS_EXCHANGE}
+    - RABBITMQ_RANK_ROUTING_KEY=${RABBITMQ_RANK_ROUTING_KEY}
+    - RABBITMQ_SIMILARITY_ROUTING_KEY=${RABBITMQ_SIMILARITY_ROUTING_KEY}  
+    - DB_MAIN=${DB_MAIN}
+    - DB_EU=${DB_EU}
+    - DB_RU=${DB_RU}
+    - DB_ASIA=${DB_ASIA}
+  restart: unless-stopped
+services:
+  events-logger-1:
+    <<: *events-logger
+    container_name: events-logger-1
+  events-logger-2:
+    <<: *events-logger
+    container_name: events-logger-2
