@@ -1,0 +1,13 @@
+@page
+@model AccessDeniedModel
+@{
+    ViewData["Title"] = "Access Denied";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <h2>Отказано в доступе</h2>
+        <p>У вас нет прав доступа к этой странице</p>
+        <a asp-page="/Index" class="btn btn-primary">Домой</a>
+    </div>
+</div>
