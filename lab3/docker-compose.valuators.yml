@@ -1,0 +1,44 @@
+﻿x-valuator-common: &valuator-common
+  build:
+    context: .
+    dockerfile: Valuator/Dockerfile
+  depends_on:
+    redis:
+      condition: service_healthy
+    rabbitmq:
+      condition: service_healthy
+  environment:
+    - REDIS_CONNECTION=${REDIS_CONNECTION}
+    - RABBITMQ_HOST=${RABBITMQ_HOST}
+    - RABBITMQ_PORT=${RABBITMQ_PORT}
+    - RABBITMQ_EXCHANGE=${RABBITMQ_EXCHANGE}
+    - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
+    - ASPNETCORE_URLS=${ASPNETCORE_URLS}
+    - RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD}
+    - RABBITMQ_USER=${RABBITMQ_USER}
+    - RABBITMQ_ROUTING_KEY=${RABBITMQ_ROUTING_KEY}
+  expose:
+    - "80"
+  restart: unless-stopped
+
+services:
+  valuator-1:
+    <<: *valuator-common
+    container_name: valuator-1
+    ports:
+      - "5001:80"
+  valuator-2:
+    <<: *valuator-common
+    container_name: valuator-2
+    ports:
+      - "5002:80"
+  valuator-3:
+    <<: *valuator-common
+    container_name: valuator-3
+    ports:
+      - "5003:80"
+  valuator-4:
+    <<: *valuator-common
+    container_name: valuator-4
+    ports:
+      - "5004:80"

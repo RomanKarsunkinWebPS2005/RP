@@ -1,0 +1,36 @@
+﻿x-rank-calculator-common: &rank-calculator-common
+  build:
+    context: .
+    dockerfile: RankCalculator/Dockerfile
+  depends_on:
+    redis:
+      condition: service_healthy
+    rabbitmq:
+      condition: service_healthy
+  environment:
+    - REDIS_CONNECTION=${REDIS_CONNECTION}
+    - RABBITMQ_HOST=${RABBITMQ_HOST}
+    - RABBITMQ_PORT=${RABBITMQ_PORT}
+    - RABBITMQ_USER=${RABBITMQ_USER}
+    - RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD}
+    - RABBITMQ_QUEUE=${RABBITMQ_QUEUE}
+    - RABBITMQ_EXCHANGE=${RABBITMQ_EXCHANGE}
+    - RABBITMQ_ROUTING_KEY=${RABBITMQ_ROUTING_KEY}
+  restart: unless-stopped
+
+services:
+  rank-calculator-1:
+    <<: *rank-calculator-common
+    container_name: rank-calculator-1
+
+  rank-calculator-2:
+    <<: *rank-calculator-common
+    container_name: rank-calculator-2
+
+  rank-calculator-3:
+    <<: *rank-calculator-common
+    container_name: rank-calculator-3
+
+  rank-calculator-4:
+    <<: *rank-calculator-common
+    container_name: rank-calculator-4
