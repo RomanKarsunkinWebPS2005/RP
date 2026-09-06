@@ -1,0 +1,57 @@
+@page
+@model Valuator.Pages.SummaryModel
+@{
+}
+<h2>Результаты анализа текста</h2>
+<div>
+    <p>Идентификатор текста: @Model.TextId</p>
+    <p>Плагиат: @Model.Similarity.ToString("F4")</p>
+    <p>Оценка содержания: <span id="rankValue">@(Model.Rank > 0 ? Model.Rank.ToString("F4") : "Загрузка...")</span></p>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
+    <script>
+        const textId = '@Model.TextId';
+        const currentRank = @Model.Rank.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        
+        console.log(`Страница результатов загружена. TextId: ${textId}, CurrentRank: ${currentRank}`);
+        
+        if (currentRank === 0 || currentRank === '0.0000') {
+            console.log('Ранг не готов, подключение к SignalR...');
+            
+            const connection = new signalR.HubConnectionBuilder()
+                .withUrl("/summaryHub")
+                .withAutomaticReconnect()
+                .build();
+
+            async function startConnection() {
+                try {
+                    await connection.start();
+                    console.log("SignalR подключен.");
+                    
+                    await connection.invoke("SubscribeToRankUpdate", textId);
+                    console.log(`Подписка на обновления ранга для текста: ${textId}`);
+                } catch (err) {
+                    console.error("Ошибка подключения SignalR: ", err);
+                    setTimeout(startConnection, 5000);
+                }
+            }
+
+            connection.on("RankReady", (receivedTextId, rank) => {
+                console.log(`Ранг готов для текста ${receivedTextId}: ${rank}`);
+                
+                document.getElementById("rankValue").textContent = parseFloat(rank).toFixed(4);
+            });
+
+            startConnection();
+
+            window.addEventListener("beforeunload", async () => {
+                if (connection) {
+                    await connection.invoke("UnsubscribeFromRankUpdate", textId);
+                    await connection.stop();
+                }
+            });
+        } 
+    </script>
+}

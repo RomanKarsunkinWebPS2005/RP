@@ -1,0 +1,11 @@
+version: '3.8'
+
+include:
+  - docker-compose.infrastructure.yml
+  - docker-compose.valuators.yml
+  - docker-compose.rank-calculators.yml
+  - docker-compose.nginx.yml
+  - docker-compose.events-logger.yml  
+volumes:
+  redis-data:
+  rabbitmq-data:
